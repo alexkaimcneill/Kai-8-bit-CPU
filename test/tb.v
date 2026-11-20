@@ -22,16 +22,25 @@ module tb ();
   wire [7:0] uo_out;
   wire [7:0] uio_out;
   wire [7:0] uio_oe;
-  wire [7:0] debug_acc = dut.acc;
-  wire [4:0] debug_pc = dut.pc;
-  wire debug_loading = dut.loading;
-  wire [7:0] debug_mem24 = dut.memory[24];
 `ifdef GL_TEST
   wire VPWR = 1'b1;
   wire VGND = 1'b0;
 `endif
 
-  // Replace tt_um_example with your module name:
+`ifndef COCOTB_SIM
+  initial begin
+    clk    = 0;
+    rst_n  = 0;
+    ena    = 1;
+    ui_in  = 0;
+    uio_in = 0;
+    #100 rst_n = 1;
+    #5000 $finish;
+  end
+  always #5 clk = ~clk;
+`endif
+
+
   tt_um_alexkaimcneill_kai_8bitCPU dut (
 
       // Include power ports for the Gate Level test:
