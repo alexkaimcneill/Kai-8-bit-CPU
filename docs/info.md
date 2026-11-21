@@ -37,4 +37,3 @@ If the value in the accumulator is 0, execute instructions starting from the spe
 
 ## How to test
 Data is loaded into the registers, and the value in the accumulator is output each clock cycle.
-
