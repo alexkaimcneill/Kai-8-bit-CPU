@@ -28,14 +28,59 @@ module tb ();
 `endif
 
 `ifndef COCOTB_SIM
+  reg [7:0] program_data [0:9];
+  integer i;
+
+  task write_external_byte;
+    input [4:0] address;
+    input [7:0] value;
+    begin
+      @(negedge clk);
+      ui_in = {3'b100, address};
+      @(negedge clk);
+      ui_in = value;
+    end
+  endtask
+
   initial begin
     clk    = 0;
     rst_n  = 0;
     ena    = 1;
     ui_in  = 0;
     uio_in = 0;
-    #100 rst_n = 1;
-    #5000 $finish;
+
+    program_data[0] = 8'hA6; // LOADI 6
+    program_data[1] = 8'h08; // ADD memory[8]
+    program_data[2] = 8'h29; // MULT memory[9]
+    program_data[3] = 8'hC3; // JUMP 3
+    program_data[4] = 8'h00;
+    program_data[5] = 8'h00;
+    program_data[6] = 8'h00;
+    program_data[7] = 8'h00;
+    program_data[8] = 8'h07;
+    program_data[9] = 8'h03;
+
+    #20 rst_n = 1;
+    for (i = 0; i < 10; i = i + 1)
+      write_external_byte(i, program_data[i]);
+
+    @(posedge clk);
+    @(posedge clk);
+    #1;
+    if (uo_out !== 8'd6)
+      $fatal(1, "Expected accumulator 6, got %0d", uo_out);
+
+    @(posedge clk);
+    #1;
+    if (uo_out !== 8'd13)
+      $fatal(1, "Expected accumulator 13, got %0d", uo_out);
+
+    @(posedge clk);
+    #1;
+    if (uo_out !== 8'd39)
+      $fatal(1, "Expected accumulator 39, got %0d", uo_out);
+
+    $finish;
   end
   always #5 clk = ~clk;
 `endif

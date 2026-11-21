@@ -3,6 +3,8 @@
 This is a sample testbench for a Tiny Tapeout project. It uses [cocotb](https://docs.cocotb.org/en/stable/) to drive the DUT and check the outputs.
 See below to get started or for more information, check the [website](https://tinytapeout.com/hdl/testing/).
 
+The functional test loads a program that sets the accumulator to 6, adds 7 from memory, and multiplies the result by 3. It checks the accumulator after each instruction (6, 13, and 39).
+
 ## Setting up
 
 1. Edit [Makefile](Makefile) and modify `PROJECT_SOURCES` to point to your Verilog files.
